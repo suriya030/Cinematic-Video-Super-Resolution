@@ -4,9 +4,9 @@ import os
 import tqdm
 import math
 
-input_movie = r"movie\Empuraan_trailer.mxf"
-input_directory = r"tmp\j2c_images"
-output_directory = r"tmp\grok_output"
+input_movie = r"../movie/Empuraan_trailer.mxf"
+input_directory = r"j2c_images"
+output_directory = r"grok_output"
 reduce_factor = [3,2,1,0]
 
 os.makedirs(input_directory, exist_ok=True)
