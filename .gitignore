@@ -1,0 +1,10 @@
+movie/
+extracted_frames/
+__pycache__/
+
+# Large files
+*.mxf
+*.png
+*.tif
+*.j2c
+
