@@ -1,3 +1,7 @@
+"""
+Saving format has been changed => update the v2_frame_extractor.py
+"""
+
 import json
 import os
 import time

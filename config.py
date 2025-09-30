@@ -2,28 +2,25 @@
 
 # Video processing settings
 VIDEO_CONVERSION = {
-    'target_width': 1280,
-    'target_height': 720,
-    'format': 'yuv420p'
+    'reduce_factor': 3
 }
 
 # Scene detection settings
 SCENE_DETECTION = {
+    'save_detected_scenes': True,
+    'use_proxy_video': False,
     'adaptive_threshold': 3.0
 }
 
 # Quality analysis settings
 QUALITY_ANALYSIS = {
     'sequence_length': 15,
-    'use_musiq': False,  # Set to False to use NIQE-only
-    'musiq_threshold': 35.0,
-    'niqe_threshold': 6.0,
+    'quality_metrics': ['niqe', 'musiq'],
+    'threshold': {
+        'musiq': 35.0,
+        'niqe': 6.0
+    },
     'min_frame_variance': 10.0
-}
-
-# Output settings
-OUTPUT = {
-    'json_indent': 2
 }
 
 # Directory settings

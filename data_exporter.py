@@ -1,53 +1,51 @@
 import json
 from colorama import Fore
-from config import OUTPUT
 from utils import ensure_directory, print_processing, print_success
 
-def save_analysis_json(video_info, scenes_info, scene_results, output_path):
-    """Save complete analysis results to JSON file"""
+def save_analysis_json(metadata, detected_scenes, scene_results, output_path):
+    """ args: metadata [dict], detected_scenes [list of dicts], scene_results [list of dicts], output_path [str]
+    return: analysis_data [dict] """
+
     print_processing("Preparing analysis data for export...")
-    
-    # Add frame selection info to each scene
-    for scene in scenes_info:
-        scene_id = scene['scene_id']
-        scene_result = next((sr for sr in scene_results if sr['scene_id'] == scene_id), None)
-        
-        if scene_result:
-            scene['frames_selected'] = scene_result['sequence_found']
-            if scene_result['sequence_found']:
-                scene['selected_frame_range'] = {
-                    'start_frame': scene_result['selected_frames'][0],
-                    'end_frame': scene_result['selected_frames'][-1],
-                    'total_selected': len(scene_result['selected_frames'])
-                }
-            else:
-                scene['selected_frame_range'] = None
-        else:
-            scene['frames_selected'] = False
-            scene['selected_frame_range'] = None
-    
-    # Calculate summary statistics
-    total_sequences_found = sum(1 for sr in scene_results if sr['sequence_found'])
-    total_frames_selected = sum(sr['total_frames_selected'] for sr in scene_results)
-    
-    # Prepare final analysis data
+    # Step 1: Save metadata first
     analysis_data = {
-        'video_information': video_info,
-        'scene_detection': {
-            'total_scenes_detected': len(scenes_info),
-            'scenes': scenes_info
-        },
-        'quality_analysis': {
-            'total_scenes_with_sequences': total_sequences_found,
-            'total_frames_selected': total_frames_selected,
-            'scene_results': scene_results
-        }
+        'metadata': metadata
     }
     
-    # Save to JSON file
+    # Step 2: Save detected scenes and add quality sequence info if available
+    scenes_with_quality_info = []
+    
+    for scene in detected_scenes:
+        scene_id = scene['scene_id']
+        scene_data = scene.copy()
+        scene_result = scene_results[scene_id - 1]
+        
+        if scene_result['sequence_found']:
+            scene_data['frames_selected'] = True
+            scene_data['selected_frame_range'] = {
+                'start_frame': scene_result['selected_frames'][0],
+                'end_frame': scene_result['selected_frames'][-1]
+            }
+        else:
+            scene_data['frames_selected'] = False
+            scene_data['selected_frame_range'] = None
+        
+        scenes_with_quality_info.append(scene_data)
+    
+    # Calculate summary statistics
+    total_sequences_found = sum(1 for scene in scenes_with_quality_info if scene['frames_selected'])
+    
+    # Add scene detection data
+    analysis_data['scene_detection'] = {
+        'total_scenes_detected': len(detected_scenes),
+        'total_scenes_with_sequences': total_sequences_found,
+        'scenes': scenes_with_quality_info
+    }
+    
+    # Step 3: Save to JSON file
     ensure_directory(output_path)
     with open(output_path, 'w') as f:
-        json.dump(analysis_data, f, indent=OUTPUT['json_indent'])
+        json.dump(analysis_data, f, indent=2)
     
     print_success(f"Analysis data saved to: {Fore.YELLOW}{output_path}")
     return analysis_data

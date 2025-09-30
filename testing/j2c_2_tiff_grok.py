@@ -4,10 +4,10 @@ import os
 import tqdm
 import math
 
-input_movie = r"../movie/Empuraan_trailer.mxf"
-input_directory = r"j2c_images"
-output_directory = r"grok_output"
-reduce_factor = [3,2,1,0]
+input_movie = r"movie/Empuraan_trailer.mxf" 
+input_directory = r"tmp/j2c_images"
+output_directory = r"tmp/grok_output"
+reduce_factor = [0]
 
 os.makedirs(input_directory, exist_ok=True)
 os.makedirs(output_directory, exist_ok=True)
@@ -20,7 +20,7 @@ def mxf_to_j2c(input_movie, output_directory):
     return time.time() - start_time
 
 def batch_decode_to_tiff(input_directory, output_directory, output_format="tif", reduce_factor=reduce_factor):
-    cmd = f"grk_decompress -y {input_directory} -a {output_directory} -O {output_format} -r {reduce_factor} -H {4}"
+    cmd = f"grk_decompress -y {input_directory} -a {output_directory} -O {output_format} -r {reduce_factor} --force-rgb -H {os.cpu_count()}"
     start_time = time.time()
     result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
     return result.returncode == 0, time.time() - start_time
