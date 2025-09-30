@@ -7,15 +7,15 @@ VIDEO_CONVERSION = {
 
 # Scene detection settings
 SCENE_DETECTION = {
-    'save_detected_scenes': True,
-    'use_proxy_video': False,
-    'adaptive_threshold': 3.0
+    'save_detected_scenes': False,
+    'use_proxy_video': True,
+    'adaptive_threshold': 3.5
 }
 
 # Quality analysis settings
 QUALITY_ANALYSIS = {
     'sequence_length': 15,
-    'quality_metrics': ['niqe', 'musiq'],
+    'quality_metrics': ['niqe'], # 'musiq' , 'niqe
     'threshold': {
         'musiq': 35.0,
         'niqe': 6.0
