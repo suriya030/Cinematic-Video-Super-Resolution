@@ -54,20 +54,25 @@ def read_mxf_video(file_path, reduce_factor=0):
     metadata = get_metadata(file_path)    
     
     # Step 1: Extract .mxf to .j2c frames
+    time1 = time.time()
     tmp_dir = "tmp"
     tmp_j2c_frames_dir = os.path.join(tmp_dir, "j2c_frames")
     os.makedirs(tmp_j2c_frames_dir, exist_ok=True)
     output_pattern = os.path.join(tmp_j2c_frames_dir, "frame_%06d.j2c")
     cmd = f"ffmpeg -i \"{file_path}\" -c:v copy \"{output_pattern}\" -y"
     subprocess.run(cmd, shell=True, capture_output=True)
-    
+    print(f"mxf to j2c: { int(metadata['total_frames'])/(time.time() - time1):.2f} fps")
+
     # Step 2: .j2c frames to .tif frames
+    time2 = time.time()
     tif_output_dir = os.path.join(tmp_dir, "tif_frames")
     os.makedirs(tif_output_dir, exist_ok=True)
     reduce_factor = VIDEO_CONVERSION['reduce_factor']  # Fixed reduce factor    
     cmd = f"grk_decompress -y \"{tmp_j2c_frames_dir}\" -a \"{tif_output_dir}\" -O tif -r {reduce_factor} --force-rgb -H {os.cpu_count()}"
     subprocess.run(cmd, shell=True, capture_output=True)
-    
+    print(f"j2c to tif: { int(metadata['total_frames'])/(time.time() - time2):.2f} fps")
+
+    time3 = time.time()
     # Step 3: Read .tif frames and convert to ndarray
     frames_ndarray = []
     tif_files = sorted([f for f in os.listdir(tif_output_dir) if f.endswith('.tif')])
@@ -76,7 +81,8 @@ def read_mxf_video(file_path, reduce_factor=0):
         frame = tifffile.imread(file_path_tif) # ndarray uint16 (H, W, 3)
         frame_8bit = (frame >> 4).astype(np.uint8)
         frames_ndarray.append(frame_8bit)
-        
+    print(f"tif to ndarray: { int(metadata['total_frames'])/(time.time() - time3):.2f} fps")
+
     # Step 4: Calculate execution time
     end_time = time.time()
     execution_time = end_time - start_time
