@@ -1,15 +1,9 @@
-import scene_detector
-video_path = r'movie\Empuraan_trailer.mp4'
+from v2_video_reader import read_mxf_video
+import math
 
-# frame_rate = 24.0
-# detected_scenes, execution_time = scene_detection(video_path, frame_rate)
-# print(detected_scenes)
-# print(execution_time)
-
-
-import quality_analyzer
-quality_metrics, device = quality_analyzer.initialize_quality_metrics()
-# print(quality_metrics)
-# print(device)
-
-print(not quality_metrics['niqe'])
+reduce_factor = [0, 1, 2, 3]
+h,w = 1716,4096
+input_movie = r"movie/Empuraan_trailer.mxf" 
+for reduce_factor in reduce_factor:
+    frames_ndarray, metadata, execution_time = read_mxf_video(input_movie, reduce_factor)
+    print(f" Resolution {math.ceil(h/2**reduce_factor)}x{math.ceil(w/2**reduce_factor)} FPS {int(metadata['total_frames'])/execution_time:.2f}")

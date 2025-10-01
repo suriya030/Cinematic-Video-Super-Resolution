@@ -43,7 +43,7 @@ def get_metadata(file_path):
     
     raise ValueError("No video track found in the file")
 
-def read_mxf_video(file_path):
+def read_mxf_video(file_path, reduce_factor=0):
     """args: video file path [str]
     return: frames ndarray [list], metadata [dict], execution time [float]
     """
