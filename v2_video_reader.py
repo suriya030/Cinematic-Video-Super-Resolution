@@ -67,7 +67,7 @@ def read_mxf_video(file_path, reduce_factor=0):
     time2 = time.time()
     tif_output_dir = os.path.join(tmp_dir, "tif_frames")
     os.makedirs(tif_output_dir, exist_ok=True)
-    # reduce_factor = VIDEO_CONVERSION['reduce_factor']  # Fixed reduce factor    
+    reduce_factor = VIDEO_CONVERSION['reduce_factor']  # Fixed reduce factor    
     cmd = f"grk_decompress -y \"{tmp_j2c_frames_dir}\" -a \"{tif_output_dir}\" -O tif -r {reduce_factor} --force-rgb -H {os.cpu_count()}"
     subprocess.run(cmd, shell=True, capture_output=True)
     print(f"j2c to tif: { int(metadata['total_frames'])/(time.time() - time2):.2f} fps")

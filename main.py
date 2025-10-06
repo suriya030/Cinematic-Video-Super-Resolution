@@ -20,7 +20,7 @@ def mxf_pipeline(mxf_file_path, output_folder, is_timetaken=True):
     
     # Step 2: Detect video scenes
     print_step(2, "Scene detection")
-    detected_scenes, execution_time2 = scene_detection(mxf_file_path, metadata['frame_rate'])
+    detected_scenes, execution_time2 = scene_detection(frames_ndarray, metadata['frame_rate'])
     
     # Step 3: Find quality frame sequence per scene
     print_step(3, "Finding quality frame sequence per scene")

@@ -1,17 +1,27 @@
 import os
 import time
 import subprocess
+import cv2
 from scenedetect import open_video, SceneManager
 from scenedetect.detectors import AdaptiveDetector
 from colorama import Fore
 from config import SCENE_DETECTION
 from utils import print_processing, print_success, print_warning
 
-import subprocess
-import os
-
-import subprocess
-import os
+def frames_to_mp4(frames, output_path, fps=24):
+    """Convert numpy frames to MP4 video"""
+    start_time = time.time()
+    
+    height, width, channels = frames[0].shape
+    fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+    out = cv2.VideoWriter(output_path, fourcc, fps, (width, height))
+    
+    for frame in frames:
+        frame_bgr = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
+        out.write(frame_bgr)
+    
+    out.release()
+    return time.time() - start_time
 
 def save_detected_scenes(detected_scenes, video_path):
     """ args: detected_scenes [list of dicts], video_path [str]
@@ -44,20 +54,25 @@ def save_detected_scenes(detected_scenes, video_path):
     print_success(f"Scenes saved to: {Fore.CYAN}{output_dir}")
     
 
-def scene_detection(video_path, frame_rate):
-    """ args: video file path [str], frame rate [int]
+def scene_detection(frame_ndarray, frame_rate):
+    """ args: frame_ndarray [list of numpy arrays], frame rate [int]
     return: detected_scenes [list of dicts] 
     {scene_id [int], start_time_seconds [float], end_time_seconds [float], 
     start_frame [int], end_frame [int], frame_count [int]} 
     and execution time [float]"""
     
-    if SCENE_DETECTION['use_proxy_video']:
-        video_path = video_path.replace('.mxf', '.mp4')
     print_processing("Analyzing video for scene changes...")
     st_time = time.time()
     
+    # Step 0: Create temporary MP4 from frames
+    tmp_dir = "tmp"
+    os.makedirs(tmp_dir, exist_ok=True)
+    temp_video_path = os.path.join(tmp_dir, "temp_scene_detection.mp4")
+    
+    conversion_time = frames_to_mp4(frame_ndarray, temp_video_path, fps=int(float(frame_rate)))
+    
     # Step 1: Initialize & run scene detection
-    video = open_video(video_path)
+    video = open_video(temp_video_path)
     scene_manager = SceneManager()
     scene_manager.add_detector(AdaptiveDetector(
         adaptive_threshold=SCENE_DETECTION['adaptive_threshold'] ))
@@ -83,6 +98,6 @@ def scene_detection(video_path, frame_rate):
     print(f"{Fore.WHITE}⏱️  Total execution time: {execution_time:.2f} seconds")
 
     if SCENE_DETECTION['save_detected_scenes']:
-        save_detected_scenes(detected_scenes, video_path)
+        save_detected_scenes(detected_scenes, temp_video_path)
     
     return detected_scenes, execution_time
