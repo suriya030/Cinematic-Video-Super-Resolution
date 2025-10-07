@@ -12,6 +12,12 @@ from colorama import Fore, Style
 from config import VIDEO_CONVERSION
 from utils import print_processing, print_success
 
+def cleanup_tmp(tmp_directories):
+    
+    for tmp_dir in tmp_directories:
+        if os.path.exists(tmp_dir):
+            shutil.rmtree(tmp_dir, ignore_errors=True)
+
 def get_metadata(file_path):
     """ args: video file path [str]
     return: video metadata [dict]
@@ -83,7 +89,10 @@ def read_mxf_video(file_path, reduce_factor=0):
         frames_ndarray.append(frame_8bit)
     print(f"tif to ndarray: { int(metadata['total_frames'])/(time.time() - time3):.2f} fps")
 
-    # Step 4: Calculate execution time
+    # Step 4: Clean up temporary files
+    cleanup_tmp([tmp_j2c_frames_dir, tif_output_dir])
+    
+    # Step 5: Calculate execution time
     end_time = time.time()
     execution_time = end_time - start_time
     
