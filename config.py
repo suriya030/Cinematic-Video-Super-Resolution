@@ -2,7 +2,7 @@
 
 # Video processing settings
 VIDEO_CONVERSION = {
-    'reduce_factor': 4
+    'reduce_factor': 2
 }
 
 # Scene detection settings
