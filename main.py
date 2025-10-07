@@ -8,7 +8,7 @@ from scene_detector import scene_detection
 from quality_analyzer import initialize_quality_metrics, find_sequence_per_scene
 from data_exporter import save_analysis_json
 from utils import print_header, print_step, print_success, get_base_filename
-from config import DEVICE,QUALITY_ANALYSIS
+from config import DEVICE,QUALITY_ANALYSIS, VIDEO_CONVERSION
 
 def mxf_pipeline(mxf_file_path, output_folder, is_timetaken=True):
     """Complete MXF video pipeline: 1. read video, 2. detect scenes, 3. find quality frames per scene 
@@ -36,10 +36,12 @@ def mxf_pipeline(mxf_file_path, output_folder, is_timetaken=True):
     total_execution_time = execution_time1 + execution_time2 + execution_time3
     if is_timetaken:    
         print(f"\n\n{Fore.WHITE}  Time taken breakdown:")
-        print(f"{Fore.WHITE}  Step 1: {execution_time1:.2f} seconds , FPS: {int(metadata['total_frames'])/execution_time1:.2f} fps (reading .mxf file)")
-        print(f"{Fore.WHITE}  Step 2: {execution_time2:.2f} seconds , FPS: {int(len(frames_ndarray))/execution_time2:.2f} fps (scene detection)")
-        print(f"{Fore.WHITE}  Step 3: {execution_time3:.2f} seconds , FPS: {int(len(frames_ndarray))/execution_time3:.2f} fps (iqa analysis)")
-    print(f"{Fore.WHITE}⏱️  Total execution time: {total_execution_time:.2f} seconds ({len(frames_ndarray)} frames processed from .mxf file)")
+        reduce_factor = VIDEO_CONVERSION['reduce_factor']
+        h, w = round(metadata['height']//2**reduce_factor), round(metadata['width']//2**reduce_factor)
+        print(f"{Fore.WHITE}  Step 1: {execution_time1:.2f} seconds , FPS: {int(metadata['total_frames'])/execution_time1:.2f} fps (reading .mxf file) {h}x{w} resolution")
+        print(f"{Fore.WHITE}  Step 2: {execution_time2:.2f} seconds , FPS: {int(len(frames_ndarray))/execution_time2:.2f} fps (scene detection) ")
+        print(f"{Fore.WHITE}  Step 3: {execution_time3:.2f} seconds , FPS: {int(len(frames_ndarray))/execution_time3:.2f} fps (iqa analysis) ")
+    print(f"{Fore.WHITE}⏱️  Total execution time: {total_execution_time:.2f} seconds ({len(frames_ndarray)} frames or {int(metadata['total_frames'])/float(metadata['frame_rate']):.2f} seconds processed from .mxf file) {h}x{w} resolution")
 
     # Final summary
     sequences_found = sum(1 for sr in scene_results if sr['sequence_found'])

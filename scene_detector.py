@@ -2,11 +2,18 @@ import os
 import time
 import subprocess
 import cv2
+import shutil
 from scenedetect import open_video, SceneManager
 from scenedetect.detectors import AdaptiveDetector
 from colorama import Fore
 from config import SCENE_DETECTION
 from utils import print_processing, print_success, print_warning
+
+def cleanup_tmp(tmp_directories):
+    
+    for tmp_dir in tmp_directories:
+        if os.path.exists(tmp_dir):
+            shutil.rmtree(tmp_dir, ignore_errors=True)
 
 def frames_to_mp4(frames, output_path, fps=24):
     """Convert numpy frames to MP4 video"""
@@ -65,7 +72,7 @@ def scene_detection(frame_ndarray, frame_rate):
     st_time = time.time()
     
     # Step 0: Create temporary MP4 from frames
-    tmp_dir = "tmp"
+    tmp_dir = "tmp/mp4_for_scene_detection"
     os.makedirs(tmp_dir, exist_ok=True)
     temp_video_path = os.path.join(tmp_dir, "temp_scene_detection.mp4")
     
@@ -96,6 +103,9 @@ def scene_detection(frame_ndarray, frame_rate):
     execution_time = time.time() - st_time
     print_success(f"Found {Fore.YELLOW}{len(scene_list)}{Fore.GREEN} scenes")
     print(f"{Fore.WHITE}⏱️  Total execution time: {execution_time:.2f} seconds , FPS: {int(len(frame_ndarray))/execution_time:.2f} fps")
+
+    # Step 3: Clean up temporary file
+    cleanup_tmp([tmp_dir])
 
     if SCENE_DETECTION['save_detected_scenes']:
         save_detected_scenes(detected_scenes, temp_video_path)
