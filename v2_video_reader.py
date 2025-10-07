@@ -88,6 +88,6 @@ def read_mxf_video(file_path, reduce_factor=0):
     execution_time = end_time - start_time
     
     print_success(f"Successfully processed {len(tif_files)} frames and converted to ndarray")
-    print(f"{Fore.WHITE}⏱️  Total execution time: {execution_time:.2f} seconds")
+    print(f"{Fore.WHITE}⏱️  Total execution time: {execution_time:.2f} seconds , FPS: {int(metadata['total_frames'])/execution_time:.2f} fps")
     
     return frames_ndarray, metadata, execution_time

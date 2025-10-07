@@ -104,5 +104,5 @@ def find_sequence_per_scene(frames_ndarray, detected_scenes, base_video_name):
     
     # Step 3 : Return results & final print statements
     execution_time = time.time() - start_time
-    print(f"{Fore.WHITE}⏱️  Total execution time: {execution_time:.2f} seconds")
+    print(f"{Fore.WHITE}⏱️  Total execution time: {execution_time:.2f} seconds , FPS: {int(len(frames_ndarray))/execution_time:.2f} fps")
     return scene_results, execution_time

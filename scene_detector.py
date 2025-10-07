@@ -95,7 +95,7 @@ def scene_detection(frame_ndarray, frame_rate):
         
     execution_time = time.time() - st_time
     print_success(f"Found {Fore.YELLOW}{len(scene_list)}{Fore.GREEN} scenes")
-    print(f"{Fore.WHITE}⏱️  Total execution time: {execution_time:.2f} seconds")
+    print(f"{Fore.WHITE}⏱️  Total execution time: {execution_time:.2f} seconds , FPS: {int(len(frame_ndarray))/execution_time:.2f} fps")
 
     if SCENE_DETECTION['save_detected_scenes']:
         save_detected_scenes(detected_scenes, temp_video_path)
