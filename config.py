@@ -7,7 +7,7 @@ VIDEO_CONVERSION = {
 
 # Scene detection settings
 SCENE_DETECTION = {
-    'save_detected_scenes': True,
+    'save_detected_scenes': False,
     'adaptive_threshold': 3.5
 }
 
