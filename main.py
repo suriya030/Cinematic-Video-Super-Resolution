@@ -36,9 +36,9 @@ def mxf_pipeline(mxf_file_path, output_folder, is_timetaken=True):
     total_execution_time = execution_time1 + execution_time2 + execution_time3
     if is_timetaken:    
         print(f"\n\n{Fore.WHITE}  Time taken breakdown:")
-        print(f"{Fore.WHITE}  Step 1: {execution_time1:.2f} seconds (reading .mxf file)")
-        print(f"{Fore.WHITE}  Step 2: {execution_time2:.2f} seconds (scene detection)")
-        print(f"{Fore.WHITE}  Step 3: {execution_time3:.2f} seconds (iqa analysis)")
+        print(f"{Fore.WHITE}  Step 1: {execution_time1:.2f} seconds , FPS: {int(metadata['total_frames'])/execution_time1:.2f} fps (reading .mxf file)")
+        print(f"{Fore.WHITE}  Step 2: {execution_time2:.2f} seconds , FPS: {int(len(frames_ndarray))/execution_time2:.2f} fps (scene detection)")
+        print(f"{Fore.WHITE}  Step 3: {execution_time3:.2f} seconds , FPS: {int(len(frames_ndarray))/execution_time3:.2f} fps (iqa analysis)")
     print(f"{Fore.WHITE}⏱️  Total execution time: {total_execution_time:.2f} seconds ({len(frames_ndarray)} frames processed from .mxf file)")
 
     # Final summary
