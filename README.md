@@ -4,6 +4,10 @@ End-to-end pipeline for DCI MXF video processing and super-resolution training.
 
 ---
 
+I presented this work as poster at IIT Madras [XR Global Symposium](https://xtic.org/xr-symposium/)  
+
+![XR Poster](XR_poster.jpg)
+
 ## Project Structure
 ```
 ├── JPEG2000_CustomDecoder/    # Custom Python extension for decoding
@@ -55,37 +59,6 @@ python train.py  # Edit config.py first
 
 ---
 
-## JPEG2000 Decoder (xp-python)
-
-PyO3/Rust extension for fast MXF frame extraction.
-
-**Install:**
-```bash
-cd JPEG2000_CustomDecoder
-pip install maturin
-maturin develop --release
-```
-
-**Usage:**
-```python
-import xp_python
-
-extractor = xp_python.FrameExtractor(
-    filename="video.mxf",
-    drop_levels=2,  # Resolution reduction
-    pixel_format=xp_python.PixelFormat.RgbLinearF32
-)
-
-for frame in extractor:
-    data = frame['data']  # numpy array
-```
-
-**Scripts:**
-- `scene_detect.py` - Scene detection + frame saving
-- `extract_linear_frame.py` - Extract linear RGB TIFF frames
-
-
-
 ## Dependencies
 
 **Data Pipeline:** PySceneDetect, PyIQA, OpenCV, ffmpeg, grok  
@@ -93,3 +66,5 @@ for frame in extractor:
 **Decoder:** Rust, PyO3, maturin, vcpkg (Windows)
 
 ---
+
+
